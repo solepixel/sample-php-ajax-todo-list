@@ -9,7 +9,7 @@ function ajax_insert_item(){
 			'success' => false
 		);
 
-		$response['item'] = $_POST['item'];
+		$response['item'] = htmlspecialchars( $_POST['item'] );
 
 		$data = array(
 			$response['item'],
@@ -71,7 +71,7 @@ function ajax_tick_item(){
 		);
 
 		$item_id = (int) $_POST['tick'];
-		$action = isset( $_POST['action'] ) ? $_POST['action'] : '';
+		$action = isset( $_POST['action'] ) ? htmlspecialchars( $_POST['action'] ) : '';
 
 		if( ! $action ){
 			echo json_encode( $response );
