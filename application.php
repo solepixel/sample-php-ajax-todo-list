@@ -54,3 +54,114 @@ function output_todo_list(){
 		<?php endforeach;
 	echo '</ol>';
 }
+
+/**
+ * Creates a new To Do Item
+ * @return JSON
+ */
+function ajax_insert_item(){
+	if( isset( $_POST['item'] ) ):
+		global $db;
+
+		// setup response
+		$response = array(
+			'success' => false
+		);
+
+		// setup query vars
+		$response['item'] = htmlspecialchars( $_POST['item'] );
+		$data = array( $response['item'] );
+
+		// Insert into my database table
+		try {
+			$insert = $db->prepare( 'INSERT INTO todo_items ( `item`, `added` ) values ( ?, NOW() )' );
+			$insert->execute( $data );
+			$response['success'] = true;
+			$response['item_id'] = $db->lastInsertId();
+		} catch ( PDOException $e ){
+			$response['error'] = $e->getMessage();
+			$response['success'] = false;
+		}
+
+		// send the response back
+		echo json_encode( $response );
+		exit();
+
+	endif;
+}
+
+/**
+ * Remove a To Do item
+ * @return JSON
+ */
+function ajax_remove_item(){
+	if( isset( $_POST['remove'] ) ):
+		global $db;
+
+		// setup response
+		$response = array(
+			'success' => false
+		);
+
+		// setup query vars
+		$item_id = (int) $_POST['remove'];
+		$data = array( $item_id );
+
+		// mark the item as deleted
+		try {
+			$delete = $db->prepare( 'UPDATE todo_items SET `deleted` = NOW() WHERE `id` = ?' );
+			$delete->execute( $data );
+			$response['success'] = true;
+		} catch ( PDOException $e ){
+			$response['error'] = $e->getMessage();
+			$response['success'] = false;
+		}
+
+		// send the response back
+		echo json_encode( $response );
+		exit();
+
+	endif;
+}
+
+/**
+ * Mark a To Do item as done or unmark it
+ * @return JSON
+ */
+function ajax_tick_item(){
+	if( isset( $_POST['tick'] ) ):
+		global $db;
+
+		// setup response
+		$response = array(
+			'success' => false
+		);
+
+		$action = isset( $_POST['action'] ) ? htmlspecialchars( $_POST['action'] ) : '';
+
+		if( ! $action ){
+			// bail early, no action
+			echo json_encode( $response );
+			exit();
+		}
+
+		// setup query vars
+		$done = $action == 'done' ? 'NOW()' : 'NULL';
+		$item_id = (int) $_POST['tick'];
+		$data = array( $item_id );
+
+		try {
+			$tick = $db->prepare( 'UPDATE todo_items SET `done` = ' . $done . ' WHERE `id` = ?' );
+			$tick->execute( $data );
+			$response['success'] = true;
+		} catch ( PDOException $e ){
+			$response['error'] = $e->getMessage();
+			$response['success'] = false;
+		}
+
+		// send the response back
+		echo json_encode( $response );
+		exit();
+
+	endif;
+}
