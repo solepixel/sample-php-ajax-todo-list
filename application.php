@@ -1,6 +1,7 @@
 <?php
 
-if( ! headers_sent() && ! $_SESSION ){
+# Start a new session if one doesn't already exist
+if( ! headers_sent() && ! isset( $_SESSION ) ){
 	session_start();
 }
 
