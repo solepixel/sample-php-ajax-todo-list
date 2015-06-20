@@ -105,7 +105,7 @@
 							$remove = $('<a href="#remove" class="remove" />').text('x');
 
 						if( ! $list.length ){
-							$list = $('<ul id="todo-list" />');
+							$list = $('<ol id="todo-list" />');
 							$('.empty').before( $list ).addClass('hidden');
 						}
 
