@@ -1,5 +1,7 @@
-<?php error_reporting( E_ALL ); ?>
-<?php include( 'application.php' ); ?>
+<?php
+# include my primary application file
+include( 'application.php' );
+?>
 <!DOCTYPE html>
 <html>
 <head>
